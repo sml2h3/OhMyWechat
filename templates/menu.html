@@ -1,0 +1,84 @@
+{% macro left(active) %}
+<div class="left-sidebar">
+            <!-- 用户信息 -->
+            <div class="tpl-sidebar-user-panel">
+                <div class="tpl-user-panel-slide-toggleable">
+                    <div class="tpl-user-panel-profile-picture">
+                        <img src="static/assets/img/user04.png" alt="">
+                    </div>
+                    <span class="user-panel-logged-in-text">
+              <i class="am-icon-circle-o am-text-success tpl-user-panel-status-icon"></i>
+              系统管理员
+          </span>
+                    <a href="javascript:;" class="tpl-user-panel-action-link"> <span class="am-icon-pencil"></span> 账号设置</a>
+                </div>
+            </div>
+
+            <!-- 菜单 -->
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-heading">菜单 <span class="sidebar-nav-heading-info"> 主要功能</span></li>
+                <li class="sidebar-nav-link">
+                    <a href="main" class="{% if active == 'dashboard' %}
+                        active
+                    {% endif %}">
+                        <i class="am-icon-dashboard sidebar-nav-link-logo"></i> 控制台
+                    </a>
+                </li>
+                <li class="sidebar-nav-link">
+                    <a href="account" class="{% if active == 'account' %}
+                        active
+                    {% endif %}">
+                        <i class="am-icon-wechat sidebar-nav-link-logo"></i> 账号管理
+                    </a>
+                </li>
+                <li class="sidebar-nav-link">
+                    <a href="tables.html">
+                        <i class="am-icon-comments-o sidebar-nav-link-logo"></i> 微信群管
+                    </a>
+                </li>
+                <li class="sidebar-nav-link">
+                    <a href="calendar.html">
+                        <i class="am-icon-send-o sidebar-nav-link-logo"></i> 微信群发
+                    </a>
+                </li>
+                <li class="sidebar-nav-link">
+                    <a href="form.html">
+                        <i class="am-icon-envelope-o sidebar-nav-link-logo"></i> 微信通讯录
+
+                    </a>
+                </li>
+                <li class="sidebar-nav-link">
+                    <a href="chart.html">
+                        <i class="am-icon-eye sidebar-nav-link-logo"></i> 僵尸检测
+
+                    </a>
+                </li>
+
+                <li class="sidebar-nav-heading">菜单<span class="sidebar-nav-heading-info"> 系统设置</span></li>
+                <li class="sidebar-nav-link">
+                    <a href="chart.html">
+                        <i class="am-icon-user sidebar-nav-link-logo"></i> 账号设置
+
+                    </a>
+                </li>
+                <li class="sidebar-nav-link">
+                    <a href="chart.html">
+                        <i class="am-icon-cog sidebar-nav-link-logo"></i> 系统设置
+
+                    </a>
+                </li>
+                <li class="sidebar-nav-link">
+                    <a href="chart.html">
+                        <i class="am-icon-weixin sidebar-nav-link-logo"></i> 微信设置
+
+                    </a>
+                </li>
+                <li class="sidebar-nav-link">
+                    <a href="chart.html">
+                        <i class="am-icon-sign-out sidebar-nav-link-logo"></i> 退出登录
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+{%- endmacro %}
