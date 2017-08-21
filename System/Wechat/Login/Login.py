@@ -7,6 +7,7 @@
 import time
 import requests
 from System.Wechat.Common import Common
+import json
 
 
 class Login(object):
@@ -79,7 +80,7 @@ class Login(object):
                         result['avatar'] = status['userAvatar']
                     if code == "200":
                         result['code'] = 200
-                        result['redirect_uri'] = status['redirect_uri']
+                        result['info'] = self.__real_login(url=status['redirect_uri'])
                     return result
                 else:
                     return
@@ -91,6 +92,51 @@ class Login(object):
                 return result
         else:
             #status error
+            return
+
+    def __real_login(self, url):
+        try:
+            login_result = requests.get(url + "&fun=new&version=v2&lang=zh_CN")
+            if login_result and login_result.status_code == 200:
+                login_cookies = login_result.cookies
+                login_result = login_result.text
+                login_dict = self.common.xml_to_dict(login_result)
+                wxsid = login_dict['error']['wxsid']
+                wxskey = login_dict['error']['skey']
+                wxpass_ticket = login_dict['error']['pass_ticket']
+                wxuin = login_dict['error']['wxuin']
+                wxinfo = self.__wx_init(wxpass_ticket, wxsid, wxskey, wxuin, login_cookies)
+                nickname = wxinfo['User']['NickName']
+                nickname = self.common.wx_decode(nickname)
+                username = wxinfo['User']['UserName']
+                avatar = wxinfo['User']['HeadImgUrl']
+                return {
+                    'nickname': nickname,
+                    'avatar': "https://wx2.qq.com" + avatar,
+                    'uin': wxuin
+                }
+            else:
+                return
+        except ConnectionError:
+            return
+        return
+
+    def __wx_init(self, pass_ticket, sid, skey, uin, cookies):
+        try:
+            url = "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=-100877003&lang=zh_CN&pass_ticket=" + pass_ticket
+            data = '{"BaseRequest":{"Uin":"%(uin)s","Sid":"%(sid)s","Skey":"%(skey)s","DeviceID":"e026433316256963"}}'
+            data_param = {
+                'uin': uin,
+                'sid': sid,
+                'skey':skey,
+            }
+            data = data % data_param
+            result_init = requests.post(url, data=data, cookies=cookies)
+            if result_init and result_init.status_code == 200:
+                return json.loads(result_init.text)
+            else:
+                return
+        except ConnectionError:
             return
 
     def __download_qrcode(self, uuid):
@@ -112,4 +158,5 @@ class Login(object):
 
 
 if __name__ == '__main__':
-    Login().get_qrcode()
+    str = '<error><ret>0</ret><message></message><skey>@crypt_6cc605a6_ac729a225d2f2fc46e95fc00f789ddb7</skey><wxsid>nL4K0kssGKbo7OPi</wxsid><wxuin>946126726</wxuin><pass_ticket>z40TEVB2doD2OpoSCtFW8OL2chHa%2BuF%2F9zGMS92u6yec0FgXA8XBRRuY7s4rJ5xC</pass_ticket><isgrayscale>1</isgrayscale></error>'
+    Login().xml_to_dict(str)

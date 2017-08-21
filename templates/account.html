@@ -226,12 +226,16 @@
                     <div id="qrcode" class="m-active" style="display: none">
                         <img src="" alt="" id="qrcode_img">
                         <span id="qrcode_status">等待扫码</span>
-                        <button type="button" class="am-btn am-btn-warning" id="reset_qrcode">重新获取登录二维码</button>
+                        <button type="button" class="am-btn am-btn-warning" id="reset_qrcode" style="display: none">
+                            重新获取登录二维码
+                        </button>
                     </div>
                     <div id="avatar" class="" style="display: none">
                         <img src="" alt="" id="avatar_img">
                         <span id="avatar_status">请点击手机上的确认按钮</span>
-                        <button type="button" class="am-btn am-btn-warning" id="reset_avatar">重新获取登录二维码</button>
+                        <button type="button" class="am-btn am-btn-warning" id="reset_avatar" style="display: none">
+                            重新获取登录二维码
+                        </button>
                     </div>
                 </div>
             </div>
@@ -245,7 +249,7 @@
         var $resetbtn2 = $('#reset_avatar');
         var t;
         var checkLoginStatus = function () {
-            console.log('check');
+
             $.ajax({
                 url: '/api/checkLoginStatus',
                 type: 'get',
@@ -272,10 +276,10 @@
                     if ($result.code == 201) {
                         //扫码成功
                         $LoginModal.find('#qrcode').hide();
-                        $LoginModal.find('#avatar_img').attr('src',$result.avatar)
+                        $LoginModal.find('#avatar_img').attr('src', $result.avatar)
                         $LoginModal.find('#avatar').show();
                     }
-                    if(flag){
+                    if (flag) {
                         checkLoginStatus()
                     }
                 }
@@ -302,6 +306,12 @@
             timestamp = timestamp / 1000;
             $LoginModal.find('#qrcode_img').attr('src', '').attr('src', '/api/getQrCode?t=' + timestamp);
         });
+
+        $LoginModal.on('close.modal.amui', function () {
+            $LoginModal.find('#avatar').hide();
+            $LoginModal.find('#qrcode').show();
+        });
+
 
     </script>
 {% endblock %}

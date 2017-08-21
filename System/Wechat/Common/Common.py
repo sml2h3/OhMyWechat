@@ -5,6 +5,7 @@
 # |   Email:sml2h3@gmail.com |
 # ----------------------------
 import time
+from System.Wechat.Login.xml2dict import XML2Dict
 
 
 class Common(object):
@@ -26,6 +27,8 @@ class Common(object):
         text_split_tmp = text_tmp.split('; ')
         if len(text_split_tmp) < 2:
             text_split_tmp = text_tmp.split(';w')
+        if len(text_split_tmp) < 2:
+            text_split_tmp = text_tmp.split(';\n')
         result = dict()
         for text_single in text_split_tmp:
             if text_single == '':
@@ -33,6 +36,8 @@ class Common(object):
             else:
                 if ' = ' in text_single:
                     text_single_split_tmp = text_single.split(' = ')
+                elif '="' in text_single:
+                    text_single_split_tmp = text_single.split('="')
                 else:
                     text_single_split_tmp = text_single.split('=')
                 value_tmp = text_single_split_tmp[1].lstrip().replace('"', '').replace("'", '')
@@ -45,3 +50,9 @@ class Common(object):
     '''
     def get_timestamp(self):
         return int(time.time() * 1000)
+
+    def xml_to_dict(self, xml):
+        return XML2Dict().fromstring(xml)
+
+    def wx_decode(self, str):
+        return str.encode("iso-8859-1").decode('utf8')
