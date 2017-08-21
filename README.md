@@ -39,8 +39,8 @@
 
 ## 开发人员清单
 
- - [sml2h3][1]
- - [guzhenping][2]
+ - [sml2h3]
+ - [guzhenping]
 
 ### 1. 目前开发进度 [Todo 列表] 2017.8.22
 
