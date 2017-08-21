@@ -1,0 +1,13 @@
+#qrcode_img,#avatar_img{
+    display: block;
+    width:80%;
+    margin: 0 auto;
+}
+#qrcode_status,#avatar_status{
+    display: block;
+    text-align: center;
+}
+#reset_qrcode,#reset_avatar{
+    display: block;
+    margin:0 auto;
+}

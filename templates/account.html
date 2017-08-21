@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block style %}
-
+    <link rel="stylesheet" href="static/assets/css/account.css">
 {% endblock %}
 {% block content %}
-{% import 'menu.html' as menu %}
+    {% import 'menu.html' as menu %}
 
-<div class="am-g tpl-g">
+    <div class="am-g tpl-g">
         <!-- 头部 -->
         <header>
             <!-- logo -->
@@ -37,7 +37,8 @@
 
                         <!-- 新邮件 -->
                         <li class="am-dropdown tpl-dropdown" data-am-dropdown>
-                            <a href="javascript:;" class="am-dropdown-toggle tpl-dropdown-toggle" data-am-dropdown-toggle>
+                            <a href="javascript:;" class="am-dropdown-toggle tpl-dropdown-toggle"
+                               data-am-dropdown-toggle>
                                 <i class="am-icon-envelope"></i>
                                 <span class="am-badge am-badge-success am-round item-feed-badge">4</span>
                             </a>
@@ -56,7 +57,9 @@
                                                 <i class="am-icon-circle-o am-text-success"></i>
                                                 <span>夕风色</span>
                                             </div>
-                                            <div class="am-text-truncate"> Amaze UI 的诞生，依托于 GitHub 及其他技术社区上一些优秀的资源；Amaze UI 的成长，则离不开用户的支持。 </div>
+                                            <div class="am-text-truncate"> Amaze UI 的诞生，依托于 GitHub 及其他技术社区上一些优秀的资源；Amaze
+                                                UI 的成长，则离不开用户的支持。
+                                            </div>
                                             <div class="menu-messages-content-time">2016-09-21 下午 16:40</div>
                                         </div>
                                     </a>
@@ -75,7 +78,7 @@
                                                 <i class="am-icon-circle-o am-text-warning"></i>
                                                 <span>禁言小张</span>
                                             </div>
-                                            <div class="am-text-truncate"> 为了能最准确的传达所描述的问题， 建议你在反馈时附上演示，方便我们理解。 </div>
+                                            <div class="am-text-truncate"> 为了能最准确的传达所描述的问题， 建议你在反馈时附上演示，方便我们理解。</div>
                                             <div class="menu-messages-content-time">2016-09-16 上午 09:23</div>
                                         </div>
                                     </a>
@@ -172,11 +175,16 @@
             <div class="container-fluid am-cf">
                 <div class="row">
                     <div class="am-u-sm-12 am-u-md-12 am-u-lg-9">
-                        <div class="page-header-heading"><span class="am-icon-home page-header-heading-icon"></span> 账号管理 <small>OhMyWechat</small></div>
+                        <div class="page-header-heading"><span class="am-icon-home page-header-heading-icon"></span>
+                            账号管理
+                            <small>OhMyWechat</small>
+                        </div>
                         <p class="page-header-description">OhMyWechat系统致力于为您提供优雅的个人号运营系统</p>
                     </div>
                     <div class="am-u-lg-3 tpl-index-settings-button">
-                        <button type="button" class="page-header-button" id="addAccount"><span class="am-icon-paint-brush"></span> 添加账号</button>
+                        <button type="button" class="page-header-button" id="addAccount"><span
+                                class="am-icon-paint-brush"></span> 添加账号
+                        </button>
                     </div>
                 </div>
 
@@ -207,22 +215,93 @@
             </div>
         </div>
         <div class="am-modal am-modal-no-btn" tabindex="-1" id="login-modal">
-          <div class="am-modal-dialog">
-            <div class="am-modal-hd">登录账号
-              <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+            <div class="am-modal-dialog">
+                <div class="am-modal-hd">登录账号
+                    <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+                </div>
+                <div class="am-modal-bd">
+                    <div id="loading">
+                        <span class="am-icon-spinner am-icon-spin"></span>正在加载登录二维码
+                    </div>
+                    <div id="qrcode" class="m-active" style="display: none">
+                        <img src="" alt="" id="qrcode_img">
+                        <span id="qrcode_status">等待扫码</span>
+                        <button type="button" class="am-btn am-btn-warning" id="reset_qrcode">重新获取登录二维码</button>
+                    </div>
+                    <div id="avatar" class="" style="display: none">
+                        <img src="" alt="" id="avatar_img">
+                        <span id="avatar_status">请点击手机上的确认按钮</span>
+                        <button type="button" class="am-btn am-btn-warning" id="reset_avatar">重新获取登录二维码</button>
+                    </div>
+                </div>
             </div>
-            <div class="am-modal-bd">
-              Modal 内容。
-            </div>
-          </div>
         </div>
-</div>
+    </div>
 {% endblock %}
 {% block script %}
     <script>
         var $LoginModal = $('#login-modal');
-        $('#addAccount').on('click',function () {
-            $LoginModal.modal('open')
-        })
+        var $resetbtn = $('#reset_qrcode');
+        var $resetbtn2 = $('#reset_avatar');
+        var t;
+        var checkLoginStatus = function () {
+            console.log('check');
+            $.ajax({
+                url: '/api/checkLoginStatus',
+                type: 'get',
+                timeout: 30000,
+                success: function (result) {
+                    $result = JSON.parse(result);
+                    flag = true;
+                    if ($result.code == 408) {
+                        //继续登录，不作任何操作
+                    }
+                    if ($result.code == 400) {
+                        //登录超时，需要重新生成验证码
+                        flag = false;
+                        $('#qrcode_img').css('opacity', '0.1');
+                        $('#avatar_img').css('opacity', '0.1');
+                        $resetbtn.show();
+                        $resetbtn2.show();
+                    }
+                    if ($result.code == 200) {
+                        //登陆成功
+                        flag = false;
+
+                    }
+                    if ($result.code == 201) {
+                        //扫码成功
+                        $LoginModal.find('#qrcode').hide();
+                        $LoginModal.find('#avatar_img').attr('src',$result.avatar)
+                        $LoginModal.find('#avatar').show();
+                    }
+                    if(flag){
+                        checkLoginStatus()
+                    }
+                }
+            })
+        };
+        $LoginModal.find('#qrcode_img').on('load', function () {
+            $LoginModal.find('#loading').hide();
+            $LoginModal.find('#qrcode').show();
+            $resetbtn.button('reset');
+            $resetbtn.hide();
+            checkLoginStatus()
+        });
+        $('#addAccount').on('click', function () {
+            var timestamp = Date.parse(new Date());
+            timestamp = timestamp / 1000;
+            $LoginModal.find('#loading').show();
+            $LoginModal.find('#qrcode').hide();
+            $LoginModal.find('#qrcode_img').attr('src', '').attr('src', '/api/getQrCode?t=' + timestamp);
+            $LoginModal.modal('open');
+        });
+        $('#reset_qrcode').click(function () {
+            $resetbtn.button('loading');
+            var timestamp = Date.parse(new Date());
+            timestamp = timestamp / 1000;
+            $LoginModal.find('#qrcode_img').attr('src', '').attr('src', '/api/getQrCode?t=' + timestamp);
+        });
+
     </script>
 {% endblock %}
