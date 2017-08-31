@@ -191,25 +191,25 @@
             </div>
 
             <div class="row-content am-cf">
-                <div class="row  am-cf">
-                    <div class="am-u-sm-12 am-u-md-12 am-u-lg-3 widget-margin-bottom-lg ">
-                        <div class="tpl-user-card am-text-center widget-body-lg">
-                            <div class="tpl-user-card-title">
-                                客服1
-                            </div>
-                            <div class="achievement-subheading">
-                                <b>状态：</b>正常
-                            </div>
-                            <img class="achievement-image" src="static/assets/img/user07.png" alt="">
-                            <div class="achievement-description">
-                                <div class="am-btn-group am-padding-bottom-xl">
-                                    <button type="button" class="am-btn am-btn-default">编辑账号</button>
-                                    <button type="button" class="am-btn am-btn-warning">注销账号</button>
-                                    <button type="button" class="am-btn am-btn-danger">删除账号</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="row  am-cf" id="account_list">
+{#                    <div class="am-u-sm-12 am-u-md-12 am-u-lg-3 widget-margin-bottom-lg ">#}
+{#                        <div class="tpl-user-card am-text-center widget-body-lg">#}
+{#                            <div class="tpl-user-card-title">#}
+{#                                客服1#}
+{#                            </div>#}
+{#                            <div class="achievement-subheading">#}
+{#                                <b>状态：</b>正常#}
+{#                            </div>#}
+{#                            <img class="achievement-image" src="static/assets/img/user07.png" alt="">#}
+{#                            <div class="achievement-description">#}
+{#                                <div class="am-btn-group am-padding-bottom-xl">#}
+{#                                    <button type="button" class="am-btn am-btn-default">编辑账号</button>#}
+{#                                    <button type="button" class="am-btn am-btn-warning">注销账号</button>#}
+{#                                    <button type="button" class="am-btn am-btn-danger">删除账号</button>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
                 </div>
 
             </div>
@@ -236,6 +236,26 @@
                         <button type="button" class="am-btn am-btn-warning" id="reset_avatar" style="display: none">
                             重新获取登录二维码
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="model" style="display:none">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-3 widget-margin-bottom-lg ">
+            <div class="tpl-user-card am-text-center widget-body-lg">
+                <div class="tpl-user-card-title nickname">
+
+                </div>
+                <div class="achievement-subheading status">
+                    <b>状态：</b>正常
+                </div>
+                <img class="achievement-image" src="" alt="">
+                <div class="achievement-description">
+                    <div class="am-btn-group am-padding-bottom-xl">
+                        <button type="button" class="am-btn am-btn-default">编辑账号</button>
+                        <button type="button" class="am-btn am-btn-warning">注销账号</button>
+                        <button type="button" class="am-btn am-btn-danger">删除账号</button>
                     </div>
                 </div>
             </div>
@@ -270,13 +290,18 @@
                     }
                     if ($result.code == 200) {
                         //登陆成功
+                        $LoginModal.modal('close');
+                        obj = $('#model').children().clone();
+                        obj.find('.nickname').text($result.info.nickname);
+                        obj.find('.achievement-image').attr('src',$result.info.avatar);
+                        $('#account_list').append(obj);
                         flag = false;
 
                     }
                     if ($result.code == 201) {
                         //扫码成功
                         $LoginModal.find('#qrcode').hide();
-                        $LoginModal.find('#avatar_img').attr('src', $result.avatar)
+                        $LoginModal.find('#avatar_img').attr('src', $result.avatar);
                         $LoginModal.find('#avatar').show();
                     }
                     if (flag) {

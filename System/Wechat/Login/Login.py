@@ -8,6 +8,7 @@ import time
 import requests
 from System.Wechat.Common import Common
 import json
+import base64
 
 
 class Login(object):
@@ -46,9 +47,9 @@ class Login(object):
         except requests.ConnectionError as e:
             return
 
-    #检查二维码状态 400验证码失效/408等待扫码/200登陆成功
+    # 检查二维码状态 400验证码失效/408等待扫码/200登陆成功
     def check_login_status(self, uuid, status=0):
-        #status:tip
+        # status:tip
         if status in [0, 1]:
             url = "%(base)s/cgi-bin/mmwebwx-bin/login?loginicon=true" \
                   "&uuid=%(uuid)s" \
@@ -69,13 +70,13 @@ class Login(object):
                     status = self.common.response_deal_by_fh(status.text)
                     code = status['code']
                     if code == "408":
-                        #继续等待
+                        # 继续等待
                         result['code'] = 408
                     if code == "400":
-                        #超时
+                        # 超时
                         result['code'] = 400
                     if code == "201":
-                        #登录成功
+                        # 登录成功
                         result['code'] = 201
                         result['avatar'] = status['userAvatar']
                     if code == "200":
@@ -85,13 +86,13 @@ class Login(object):
                 else:
                     return
             except requests.ConnectionError:
-                #connect error
+                # connect error
                 return
             except requests.ConnectTimeout:
                 result['code'] = 408
                 return result
         else:
-            #status error
+            # status error
             return
 
     def __real_login(self, url):
@@ -110,9 +111,12 @@ class Login(object):
                 nickname = self.common.wx_decode(nickname)
                 username = wxinfo['User']['UserName']
                 avatar = wxinfo['User']['HeadImgUrl']
+                # 加载头像，此处后期需要进行异常处理
+                avatar = requests.get("https://wx2.qq.com" + avatar, cookies=login_cookies).content
+                avatar = base64.b64encode(avatar).decode()
                 return {
                     'nickname': nickname,
-                    'avatar': "https://wx2.qq.com" + avatar,
+                    'avatar':  'data:img/jpg;base64,' + avatar,
                     'uin': wxuin
                 }
             else:
@@ -128,7 +132,7 @@ class Login(object):
             data_param = {
                 'uin': uin,
                 'sid': sid,
-                'skey':skey,
+                'skey': skey,
             }
             data = data % data_param
             result_init = requests.post(url, data=data, cookies=cookies)
@@ -156,7 +160,5 @@ class Login(object):
             return
 
 
-
 if __name__ == '__main__':
-    str = '<error><ret>0</ret><message></message><skey>@crypt_6cc605a6_ac729a225d2f2fc46e95fc00f789ddb7</skey><wxsid>nL4K0kssGKbo7OPi</wxsid><wxuin>946126726</wxuin><pass_ticket>z40TEVB2doD2OpoSCtFW8OL2chHa%2BuF%2F9zGMS92u6yec0FgXA8XBRRuY7s4rJ5xC</pass_ticket><isgrayscale>1</isgrayscale></error>'
-    Login().xml_to_dict(str)
+    open('logo.jpg', 'wb')

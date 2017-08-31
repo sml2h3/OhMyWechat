@@ -31,7 +31,7 @@
  `pip3 install -r requirements.txt`
  4. 运行代码
 > 测试版运行方式
- `python3 OhMyWechat.py` (目前Web这样启动，将会在项目开发中根据实际情况不断地调整)
+ `python3 Web.py` (目前Web这样启动，将会在项目开发中根据实际情况不断地调整)
 > 正式版运行方式
  `./OhMyWechat.sh`
 
